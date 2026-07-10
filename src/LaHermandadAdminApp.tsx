@@ -1,3 +1,9 @@
+import { Button } from './components/ui/button';
+
 export const LaHermandadAdminApp = () => {
-  return <div>LaHermandadAdminApp</div>;
+  return (
+    <div>
+      <Button>Click</Button>
+    </div>
+  );
 };
