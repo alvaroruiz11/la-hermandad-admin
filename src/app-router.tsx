@@ -1,9 +1,9 @@
 import { createBrowserRouter, Navigate } from 'react-router';
-// import { authRouter } from './auth/router/auth-router';
+import { authRouter } from './auth/router/auth-router';
 
 export const appRouter = createBrowserRouter([
   // Auth
-  // { ...authRouter },
+  { ...authRouter },
 
   {
     index: true,
