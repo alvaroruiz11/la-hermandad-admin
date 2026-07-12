@@ -1,15 +1,9 @@
 import { Moon, Sun } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useThemeStore } from '../store/theme/theme-store';
+import { useTheme } from '@/components/theme-provider';
 
 export const ThemeToggle = () => {
-  const hydrated = useThemeStore.persist.hasHydrated();
-  const theme = useThemeStore((state) => state.theme);
-  const setTheme = useThemeStore((state) => state.setTheme);
-
-  if (!hydrated) {
-    return null;
-  }
+  const { theme, setTheme } = useTheme();
 
   return (
     <Button

@@ -3,7 +3,7 @@ import type { RouteObject } from 'react-router';
 
 const AdminLayout = lazy(() => import('../layout/AuthLayout'));
 const DashboardPage = lazy(() => import('../pages/dashboard/DashboardPage'));
-// const ProductsPage = lazy(() => import('../pages/products/ProductsPage'));
+const ProductsPage = lazy(() => import('../pages/products/ProductsPage'));
 // const ProductPage = lazy(() => import('../pages/product/ProductPage'));
 
 export const adminRouter: RouteObject = {
@@ -20,13 +20,13 @@ export const adminRouter: RouteObject = {
         breadcrumb: 'Dashboard',
       },
     },
-    // {
-    //   path: 'products',
-    //   element: <ProductsPage />,
-    //   handle: {
-    //     breadcrumb: 'Productos',
-    //   },
-    // },
+    {
+      path: 'products',
+      element: <ProductsPage />,
+      handle: {
+        breadcrumb: 'Productos',
+      },
+    },
     // {
     //   path: 'products/:id',
     //   element: <ProductPage />,
