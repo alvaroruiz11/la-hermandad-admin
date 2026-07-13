@@ -9,6 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
+import { loginAction } from '@/auth/actions/login.action';
 
 interface FormInputs {
   email: string;
@@ -40,10 +41,14 @@ const LoginPage = () => {
 
   const errorList = Object.entries(errors);
 
-  const onSubmit = (data: FormInputs) => {
+  const onSubmit = async (data: FormInputs) => {
     setIsLoading(true);
 
-    console.log(data);
+    const loginResp = await loginAction(data.email, data.password);
+
+    console.log({ loginResp });
+
+    setIsLoading(false);
   };
 
   return (
@@ -105,6 +110,7 @@ const LoginPage = () => {
             type="email"
             placeholder="john@example.com"
             className="h-12 bg-input border-border transition-all duration-200 focus:scale-[1.01]"
+            autoComplete="email"
             disabled={isLoading}
             aria-invalid={!!errors.email}
           />
@@ -136,6 +142,7 @@ const LoginPage = () => {
             name="password"
             className="h-12 bg-input border-border transition-all duration-200 focus:scale-[1.01]"
             placeholder="Introduce tu contraseña"
+            autoComplete="current-password"
             disabled={isLoading}
             aria-invalid={!!errors.password}
           />
