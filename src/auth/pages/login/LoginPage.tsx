@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { useForm, useWatch } from 'react-hook-form';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, CircleX } from 'lucide-react';
 
 import { PasswordInput } from '@/components/auth/password-input';
 import { Button } from '@/components/ui/button';
@@ -9,7 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
-import { loginAction } from '@/auth/actions/login.action';
+import { useAuthStore } from '@/auth/store/auth.store';
 
 interface FormInputs {
   email: string;
@@ -18,7 +18,11 @@ interface FormInputs {
 }
 
 const LoginPage = () => {
+  const navigate = useNavigate();
+  const login = useAuthStore((state) => state.login);
+
   const [isLoading, setIsLoading] = useState(false);
+  const [isShowCredentialError, setIsShowCredentialError] = useState(false);
 
   const {
     control,
@@ -44,11 +48,18 @@ const LoginPage = () => {
   const onSubmit = async (data: FormInputs) => {
     setIsLoading(true);
 
-    const loginResp = await loginAction(data.email, data.password);
+    const ok = await login(data.email, data.password);
 
-    console.log({ loginResp });
-
+    if (ok) {
+      navigate('/admin');
+      return;
+    }
     setIsLoading(false);
+    setIsShowCredentialError(true);
+
+    setTimeout(() => {
+      setIsShowCredentialError(false);
+    }, 2000);
   };
 
   return (
@@ -90,6 +101,31 @@ const LoginPage = () => {
                   </li>
                 ))}
               </ul>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isShowCredentialError && (
+        <div
+          tabIndex={-1}
+          role="alert"
+          aria-labelledby="error-summary-title"
+          className="p-4 rounded-lg border border-destructive/50 bg-destructive/10 animate-in fade-in slide-in-from-top-2"
+        >
+          <div className="flex gap-3">
+            <CircleX className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
+
+            <div className="space-y-1">
+              <p
+                id="error-summary-title"
+                className="font-medium text-destructive"
+              >
+                Credenciales inválidas
+              </p>
+              <p className="text-sm text-destructive/90">
+                Por favor, intente iniciar sesión nuevamente.
+              </p>
             </div>
           </div>
         </div>
