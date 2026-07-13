@@ -1,53 +1,50 @@
-import React from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router';
+import { useForm, useWatch } from 'react-hook-form';
 import { AlertCircle } from 'lucide-react';
+
 import { PasswordInput } from '@/components/auth/password-input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-const LoginPage = () => {
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [errors, setErrors] = React.useState<Record<string, string>>({});
+interface FormInputs {
+  email: string;
+  password: string;
+  remember: boolean;
+}
 
-  const errorSummaryRef = React.useRef<HTMLDivElement>(null);
+const LoginPage = () => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const {
+    control,
+    register,
+    formState: { errors },
+    handleSubmit,
+    setValue,
+  } = useForm<FormInputs>({
+    defaultValues: {
+      email: '',
+      password: '',
+      remember: false,
+    },
+  });
+
+  const remember = useWatch({
+    control,
+    name: 'remember',
+  });
 
   const errorList = Object.entries(errors);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setErrors({});
+  const onSubmit = (data: FormInputs) => {
     setIsLoading(true);
 
-    const formData = new FormData(e.currentTarget);
-    const email = formData.get('email') as string;
-    const password = formData.get('password') as string;
+    console.log(data);
+  };
 
-    // Client-side validation
-    const newErrors: Record<string, string> = {};
-
-    if (!email.trim()) newErrors.email = 'Email is required';
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
-      newErrors.email = 'Invalid email address';
-    if (!password) newErrors.password = 'Password is required';
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      setIsLoading(false);
-      setTimeout(() => {
-        errorSummaryRef.current?.focus();
-      }, 100);
-      return;
-    }
-
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    // Simulate failed login for demo (in real app, this would check credentials)
-    // For now, just redirect to home
-    // router.push("/")
-  }
   return (
     <div className="space-y-6">
       <div className="space-y-2">
@@ -61,7 +58,6 @@ const LoginPage = () => {
 
       {errorList.length > 0 && (
         <div
-          ref={errorSummaryRef}
           tabIndex={-1}
           role="alert"
           aria-labelledby="error-summary-title"
@@ -77,7 +73,7 @@ const LoginPage = () => {
                 Por favor, corrija los siguientes errores:
               </p>
               <ul className="text-sm text-destructive/90 space-y-1">
-                {errorList.map(([field, message]) => (
+                {errorList.map(([field, { message }]) => (
                   <li key={field}>
                     <a
                       href={`#${field}`}
@@ -93,26 +89,30 @@ const LoginPage = () => {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="email">Correo electrónico</Label>
           <Input
             id="email"
-            name="email"
+            {...register('email', {
+              required: 'El correo electrónico es obligatorio.',
+              pattern: {
+                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                message: 'El correo electrónico no es válido.',
+              },
+            })}
             type="email"
             placeholder="john@example.com"
-            autoComplete="email"
             className="h-12 bg-input border-border transition-all duration-200 focus:scale-[1.01]"
             disabled={isLoading}
             aria-invalid={!!errors.email}
-            aria-describedby={errors.email ? 'email-error' : undefined}
           />
           {errors.email && (
             <p
               id="email-error"
               className="text-sm text-destructive animate-in fade-in slide-in-from-top-1"
             >
-              {errors.email}
+              {errors.email.message}
             </p>
           )}
         </div>
@@ -129,19 +129,21 @@ const LoginPage = () => {
           </div>
           <PasswordInput
             id="password"
+            {...register('password', {
+              required: 'La contraseña es obligatoria',
+            })}
             name="password"
             className="h-12 bg-input border-border transition-all duration-200 focus:scale-[1.01]"
             placeholder="Introduce tu contraseña"
             disabled={isLoading}
             aria-invalid={!!errors.password}
-            aria-describedby={errors.password ? 'password-error' : undefined}
           />
           {errors.password && (
             <p
               id="password-error"
               className="text-sm text-destructive animate-in fade-in slide-in-from-top-1"
             >
-              {errors.password}
+              {errors.password.message}
             </p>
           )}
         </div>
@@ -150,6 +152,8 @@ const LoginPage = () => {
           <Checkbox
             id="remember"
             name="remember"
+            checked={remember}
+            onCheckedChange={() => setValue('remember', !remember)}
             className="transition-all duration-200"
           />
           <Label
