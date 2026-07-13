@@ -1,7 +1,10 @@
 import { laHermandadApi } from '@/api/la-hermandad-api';
 import type { AuthResponse } from '../interfaces/auth-response.interface';
 
-export const loginAction = async (email: string, password: string) => {
+export const loginAction = async (
+  email: string,
+  password: string,
+): Promise<AuthResponse> => {
   try {
     const { data } = await laHermandadApi.post<AuthResponse>('/auth/login', {
       email,

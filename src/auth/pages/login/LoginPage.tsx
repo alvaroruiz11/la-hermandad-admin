@@ -121,7 +121,7 @@ const LoginPage = () => {
                 id="error-summary-title"
                 className="font-medium text-destructive"
               >
-                Credenciales inválidas
+                Correo o/y contraseña no válidos
               </p>
               <p className="text-sm text-destructive/90">
                 Por favor, intente iniciar sesión nuevamente.

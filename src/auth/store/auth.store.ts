@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 import { loginAction } from '../actions/login.action';
+import { checkAuthAction } from '../actions/check-auth.action';
+
 import type { User } from '../interfaces/auth-response.interface';
 
 type AuthStatus = 'authenticated' | 'checking' | 'not-authenticated';
@@ -11,8 +13,8 @@ type AuthState = {
 
   // Acciones
   login: (email: string, password: string) => Promise<boolean>;
+  checkAuthStatus: () => Promise<boolean>;
   logout: () => void;
-  // checkStatus: () => Promise<boolean>;
 };
 
 export const useAuthStore = create<AuthState>()((set) => ({
@@ -34,19 +36,19 @@ export const useAuthStore = create<AuthState>()((set) => ({
       return false;
     }
   },
-  // checkStatus: async () => {
-  //   try {
-  //     const data = await loginAction(email, password);
+  checkAuthStatus: async () => {
+    try {
+      const data = await checkAuthAction();
 
-  //     set({ user: data.user, token: data.token, authStatus: 'authenticated' });
+      set({ user: data.user, token: data.token, authStatus: 'authenticated' });
 
-  //     return true;
-  //   } catch (error) {
-  //     localStorage.removeItem('token');
-  //     set({ user: null, token: null, authStatus: 'not-authenticated' });
-  //     return false;
-  //   }
-  // },
+      return true;
+    } catch (error) {
+      localStorage.removeItem('token');
+      set({ user: null, token: null, authStatus: 'not-authenticated' });
+      return false;
+    }
+  },
   logout: () => {
     localStorage.removeItem('token');
     set({ user: null, token: null, authStatus: 'not-authenticated' });

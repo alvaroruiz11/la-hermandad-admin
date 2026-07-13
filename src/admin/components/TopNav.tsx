@@ -29,11 +29,9 @@ export const TopNav = () => {
 
         <DropdownMenu>
           <DropdownMenuTrigger className="focus:outline-none">
-            <Button variant="ghost" size="icon" className="rounded-full">
-              <Avatar>
-                <AvatarFallback>AR</AvatarFallback>
-              </Avatar>
-            </Button>
+            <Avatar>
+              <AvatarFallback>AR</AvatarFallback>
+            </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="end"
