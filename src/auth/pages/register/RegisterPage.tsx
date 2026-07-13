@@ -5,59 +5,45 @@ import { PasswordInput } from '@/components/auth/password-input';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useForm, useWatch } from 'react-hook-form';
+import { PasswordMatch } from '@/components/auth/password-match';
+import { Spinner } from '@/components/ui/spinner';
+
+interface FormInputs {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
 
 const RegisterPage = () => {
   const [isLoading, setIsLoading] = React.useState(false);
-  const [errors, setErrors] = React.useState<Record<string, string>>({});
-  const [password, setPassword] = React.useState('');
-  const [confirmPassword, setConfirmPassword] = React.useState('');
 
-  const errorSummaryRef = React.useRef<HTMLDivElement>(null);
-  const firstErrorRef = React.useRef<HTMLInputElement>(null);
+  const {
+    control,
+    register,
+    formState: { errors },
+    handleSubmit,
+  } = useForm<FormInputs>({
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+    },
+  });
+
+  const password = useWatch({ control, name: 'password' });
+  const confirmPassword = useWatch({ control, name: 'confirmPassword' });
 
   const errorList = Object.entries(errors);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setErrors({});
+  const onSubmit = (data: FormInputs) => {
     setIsLoading(true);
-
-    const formData = new FormData(e.currentTarget);
-    const firstName = formData.get('firstName') as string;
-    const lastName = formData.get('lastName') as string;
-    const email = formData.get('email') as string;
-
-    // Client-side validation
-    const newErrors: Record<string, string> = {};
-
-    if (!firstName.trim()) newErrors.firstName = 'First name is required';
-    if (!lastName.trim()) newErrors.lastName = 'Last name is required';
-    if (!email.trim()) newErrors.email = 'Email is required';
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
-      newErrors.email = 'Invalid email address';
-
-    if (!password) newErrors.password = 'Password is required';
-    else if (password.length < 8)
-      newErrors.password = 'Password must be at least 8 characters';
-    if (password !== confirmPassword)
-      newErrors.confirmPassword = 'Passwords do not match';
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      setIsLoading(false);
-
-      // Focus first error field
-      setTimeout(() => {
-        errorSummaryRef.current?.focus();
-      }, 100);
-      return;
-    }
-
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    // router.push('/auth/thank-you');
-  }
+    console.log(data);
+  };
 
   return (
     <div className="space-y-6">
@@ -72,7 +58,6 @@ const RegisterPage = () => {
 
       {errorList.length > 0 && (
         <div
-          ref={errorSummaryRef}
           tabIndex={-1}
           role="alert"
           aria-labelledby="error-summary-title"
@@ -88,7 +73,7 @@ const RegisterPage = () => {
                 Por favor, corrija los siguientes errores:
               </p>
               <ul className="text-sm text-destructive/90 space-y-1">
-                {errorList.map(([field, message]) => (
+                {errorList.map(([field, { message }]) => (
                   <li key={field}>
                     <a
                       href={`#${field}`}
@@ -104,29 +89,31 @@ const RegisterPage = () => {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="firstName">Nombre</Label>
             <Input
-              ref={errors.firstName ? firstErrorRef : undefined}
               id="firstName"
+              {...register('firstName', {
+                required: 'El nombre es requerido',
+                minLength: {
+                  value: 2,
+                  message: 'El nombre debe tener al menos 3 caracteres',
+                },
+              })}
               name="firstName"
               placeholder="John"
-              autoComplete="given-name"
               className="h-12 bg-input border-border transition-all duration-200 focus:scale-[1.01]"
               disabled={isLoading}
               aria-invalid={!!errors.firstName}
-              aria-describedby={
-                errors.firstName ? 'firstName-error' : undefined
-              }
             />
             {errors.firstName && (
               <p
                 id="firstName-error"
                 className="text-sm text-destructive animate-in fade-in slide-in-from-top-1"
               >
-                {errors.firstName}
+                {errors.firstName.message}
               </p>
             )}
           </div>
@@ -134,20 +121,25 @@ const RegisterPage = () => {
             <Label htmlFor="lastName">Apellido</Label>
             <Input
               id="lastName"
+              {...register('lastName', {
+                required: 'El apellido es requerido',
+                minLength: {
+                  value: 3,
+                  message: 'El apellido debe tener al menos 3 caracteres',
+                },
+              })}
               name="lastName"
               placeholder="Doe"
-              autoComplete="family-name"
               className="h-12 bg-input border-border transition-all duration-200 focus:scale-[1.01]"
               disabled={isLoading}
               aria-invalid={!!errors.lastName}
-              aria-describedby={errors.lastName ? 'lastName-error' : undefined}
             />
             {errors.lastName && (
               <p
                 id="lastName-error"
                 className="text-sm text-destructive animate-in fade-in slide-in-from-top-1"
               >
-                {errors.lastName}
+                {errors.lastName.message}
               </p>
             )}
           </div>
@@ -157,21 +149,26 @@ const RegisterPage = () => {
           <Label htmlFor="email">Correo electrónico</Label>
           <Input
             id="email"
+            {...register('email', {
+              required: 'El correo electrónico es requerido',
+              pattern: {
+                value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                message: 'El correo electrónico es inválido',
+              },
+            })}
             name="email"
             type="email"
             placeholder="john@example.com"
-            autoComplete="email"
             className="h-12 bg-input border-border transition-all duration-200 focus:scale-[1.01]"
             disabled={isLoading}
             aria-invalid={!!errors.email}
-            aria-describedby={errors.email ? 'email-error' : undefined}
           />
           {errors.email && (
             <p
               id="email-error"
               className="text-sm text-destructive animate-in fade-in slide-in-from-top-1"
             >
-              {errors.email}
+              {errors.email.message}
             </p>
           )}
         </div>
@@ -184,10 +181,14 @@ const RegisterPage = () => {
             placeholder="Crear una contraseña"
             className="h-12 bg-input border-border transition-all duration-200 focus:scale-[1.01]"
             disabled={isLoading}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            {...register('password', {
+              required: 'La contraseña es requerida',
+              minLength: {
+                value: 6,
+                message: 'La contraseña debe tener al menos 6 caracteres',
+              },
+            })}
             aria-invalid={!!errors.password}
-            aria-describedby="password-strength password-error"
           />
           {/* <PasswordStrength password={password} /> */}
           {errors.password && (
@@ -195,7 +196,7 @@ const RegisterPage = () => {
               id="password-error"
               className="text-sm text-destructive animate-in fade-in slide-in-from-top-1"
             >
-              {errors.password}
+              {errors.password.message}
             </p>
           )}
         </div>
@@ -205,26 +206,29 @@ const RegisterPage = () => {
           <PasswordInput
             id="confirmPassword"
             name="confirmPassword"
+            {...register('confirmPassword', {
+              validate: {
+                matchPassword: (value) =>
+                  value === password || 'Las contraseñas no coinciden',
+              },
+            })}
             placeholder="Confirma tu contraseña"
             className="h-12 bg-input border-border transition-all duration-200 focus:scale-[1.01]"
             disabled={isLoading}
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
             aria-invalid={!!errors.confirmPassword}
-            aria-describedby="password-match confirmPassword-error"
           />
-          {/* <PasswordMatch
+          <PasswordMatch
             password={password}
             confirmPassword={confirmPassword}
-          /> */}
-          {errors.confirmPassword && (
+          />
+          {/* {errors.confirmPassword && (
             <p
               id="confirmPassword-error"
               className="text-sm text-destructive animate-in fade-in slide-in-from-top-1"
             >
-              {errors.confirmPassword}
+              {errors.confirmPassword.message}
             </p>
-          )}
+          )} */}
         </div>
 
         <Button
@@ -232,7 +236,14 @@ const RegisterPage = () => {
           className="w-full h-12 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
           disabled={isLoading}
         >
-          {isLoading ? 'Creando cuenta...' : 'Crear una cuenta'}
+          {isLoading ? (
+            <>
+              <Spinner data-icon="inline-start" />{' '}
+              <span>Creando cuenta...</span>
+            </>
+          ) : (
+            'Crear una cuenta'
+          )}
         </Button>
 
         {/* <p className="text-xs text-center text-muted-foreground">

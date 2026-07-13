@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Spinner } from '@/components/ui/spinner';
 
 interface FormInputs {
   email: string;
@@ -169,7 +170,14 @@ const LoginPage = () => {
           className="w-full h-12 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
           disabled={isLoading}
         >
-          {isLoading ? 'Iniciando sesión...' : 'Iniciar sesión'}
+          {isLoading ? (
+            <>
+              <Spinner data-icon="inline-start" />{' '}
+              <span>Iniciando sesión...</span>
+            </>
+          ) : (
+            'Iniciar sesión'
+          )}
         </Button>
       </form>
 
