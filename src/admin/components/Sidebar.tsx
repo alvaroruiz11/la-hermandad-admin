@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
-import { Home, Settings, Tag } from 'lucide-react';
+import { Home, Settings, Tag, User } from 'lucide-react';
 
 import { NavItem } from './NavItem';
 
@@ -58,6 +58,13 @@ export const Sidebar = () => {
                     onNavigation={handleNavigation}
                   >
                     Productos
+                  </NavItem>
+                  <NavItem
+                    to="/admin/customers"
+                    Icon={User}
+                    onNavigation={handleNavigation}
+                  >
+                    Clientes
                   </NavItem>
                   {/* <NavItem href="#" icon={Folder}>
                     Projects
