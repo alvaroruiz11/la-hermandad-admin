@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { DataStatusFilter } from '@/shared/components/DataStatusFilter';
 import { DataSort, type SortOption } from '@/shared/components/DataSort';
 import { ProductsTable } from '@/products/components/ProductsTable';
+import { SearchInput } from '@/shared/components/SearchInput';
 
 const productsSortOptions: SortOption[] = [
   {
@@ -65,6 +66,11 @@ const ProductsPage = () => {
                 ]}
               />
               <div className="flex items-center gap-2">
+                <SearchInput
+                  className="max-w-xs"
+                  placeholder="Buscar producto"
+                />
+
                 <DataSort options={productsSortOptions} />
               </div>
             </div>

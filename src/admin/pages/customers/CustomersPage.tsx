@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 
 import { DataSort, type SortOption } from '@/shared/components/DataSort';
 import { CustomersTable } from '@/customers/components/CustomersTable';
+import { SearchInput } from '@/shared/components/SearchInput';
 
 const customersSortOptions: SortOption[] = [
   {
@@ -63,7 +64,8 @@ const CustomersPage = () => {
       <div className="mt-3">
         <Card className="p-0">
           <CardContent className="p-0">
-            <div className="p-2 flex items-center justify-between border-b">
+            <div className="p-2 flex justify-between items-center gap-2 border-b">
+              <SearchInput className="max-w-xs" placeholder="Buscar cliente" />
               <DataSort options={customersSortOptions} />
             </div>
             <CustomersTable />
