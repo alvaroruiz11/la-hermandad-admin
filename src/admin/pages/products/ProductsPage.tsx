@@ -9,6 +9,8 @@ import { DataSort, type SortOption } from '@/shared/components/DataSort';
 import { ProductsTable } from '@/products/components/ProductsTable';
 import { SearchInput } from '@/shared/components/SearchInput';
 import { useProducts } from '@/products/hooks/useProducts';
+import { DataEmptyState } from '@/shared/components/DataEmptyState';
+import { Spinner } from '@/components/ui/spinner';
 
 const productsSortOptions: SortOption[] = [
   {
@@ -48,7 +50,7 @@ const productsSortOptions: SortOption[] = [
 const ProductsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const { data } = useProducts();
+  const { data, isLoading } = useProducts();
 
   const query = searchParams.get('q') || '';
 
@@ -98,7 +100,16 @@ const ProductsPage = () => {
                 <DataSort options={productsSortOptions} />
               </div>
             </div>
-            <ProductsTable products={data?.results || []} />
+            {/* TODO: Mejorar el isLoading */}
+            {isLoading ? (
+              <div className="flex items-center justify-center h-24">
+                <Spinner />
+              </div>
+            ) : data?.results && data.results.length > 0 ? (
+              <ProductsTable products={data?.results || []} />
+            ) : (
+              <DataEmptyState title="No se encontraron productos" />
+            )}
           </CardContent>
         </Card>
       </div>
