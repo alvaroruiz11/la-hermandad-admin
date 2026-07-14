@@ -1,3 +1,4 @@
+import { AuthenticatedRoute } from '@/auth/components/ProtectedRoutes';
 import { lazy } from 'react';
 import type { RouteObject } from 'react-router';
 
@@ -10,7 +11,11 @@ const CustomerPage = lazy(() => import('../pages/customer/CustomerPage'));
 
 export const adminRouter: RouteObject = {
   path: '/admin',
-  element: <AdminLayout />,
+  element: (
+    <AuthenticatedRoute>
+      <AdminLayout />
+    </AuthenticatedRoute>
+  ),
   handle: {
     breadcrumb: 'Inicio',
   },
