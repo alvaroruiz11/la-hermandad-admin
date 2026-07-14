@@ -1,4 +1,4 @@
-import { Link } from 'react-router';
+import { Link, useSearchParams } from 'react-router';
 import { Plus, Tag } from 'lucide-react';
 
 import { AdminTitle } from '@/admin/components/AdminTitle';
@@ -46,7 +46,23 @@ const productsSortOptions: SortOption[] = [
 ];
 
 const ProductsPage = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const { data } = useProducts();
+
+  const query = searchParams.get('q') || '';
+
+  const handleSearchProduct = (query: string) => {
+    const params = new URLSearchParams(searchParams);
+
+    if (query && query.length > 0) {
+      params.set('q', query);
+    } else {
+      params.delete('q');
+    }
+
+    setSearchParams(params);
+  };
 
   return (
     <>
@@ -75,6 +91,8 @@ const ProductsPage = () => {
                 <SearchInput
                   className="max-w-xs"
                   placeholder="Buscar producto"
+                  query={query}
+                  onQueryChange={handleSearchProduct}
                 />
 
                 <DataSort options={productsSortOptions} />

@@ -5,6 +5,7 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from '@/components/ui/input-group';
+import { useEffect, useState, type KeyboardEvent } from 'react';
 
 interface Props {
   className?: string;
@@ -16,16 +17,43 @@ interface Props {
 export const SearchInput = ({
   className,
   placeholder = 'Buscar...',
-  query,
+  query = '',
   onQueryChange,
 }: Props) => {
+  const [value, setValue] = useState(query);
+
+  useEffect(() => {
+    setValue(query);
+  }, [query]);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      onQueryChange(value);
+    }, 600);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [value, onQueryChange]);
+
+  const handleSearch = () => {
+    onQueryChange(value);
+  };
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
   return (
     <InputGroup className={className}>
       <InputGroupInput
         type="search"
         placeholder={placeholder}
-        value={query}
-        onChange={(e) => onQueryChange?.(e.target.value)}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        onKeyDown={handleKeyDown}
       />
       <InputGroupAddon>
         <Search />
