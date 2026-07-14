@@ -6,24 +6,25 @@ import {
 import { Avatar, AvatarBadge, AvatarFallback } from '@/components/ui/avatar';
 
 interface Props {
-  initials?: string;
-  fullName?: string;
-  email?: string;
-  logout?: () => void;
+  fullName: string;
+  email: string;
+  onLogout: () => void;
 }
 
-export const ProfileMenu = ({ initials, fullName, email, logout }: Props) => {
+export const ProfileMenu = ({ fullName, email, onLogout }: Props) => {
   return (
     <>
       <DropdownMenuItem>
         <div className="flex items-center gap-2">
           <Avatar>
-            <AvatarFallback>AR</AvatarFallback>
+            <AvatarFallback>
+              {fullName?.substring(0, 2).toUpperCase()}
+            </AvatarFallback>
             <AvatarBadge className="bg-green-600 dark:bg-green-800" />
           </Avatar>
           <div>
-            <p className="text-sm font-medium">Alvaro Ruiz</p>
-            <p className="text-xs text-muted-foreground">alvaro@google.com</p>
+            <p className="text-sm font-medium">{fullName}</p>
+            <p className="text-xs text-muted-foreground">{email}</p>
           </div>
         </div>
       </DropdownMenuItem>
@@ -39,7 +40,7 @@ export const ProfileMenu = ({ initials, fullName, email, logout }: Props) => {
       <DropdownMenuSeparator />
       <DropdownMenuItem
         variant="destructive"
-        onClick={logout}
+        onClick={onLogout}
         className="cursor-pointer"
       >
         <LogOutIcon />

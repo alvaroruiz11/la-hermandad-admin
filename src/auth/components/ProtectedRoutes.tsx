@@ -22,13 +22,13 @@ export const NotAuthenticatedRoute = ({ children }: PropsWithChildren) => {
 
 export const AdminRoute = ({ children }: PropsWithChildren) => {
   const authStatus = useAuthStore((state) => state.authStatus);
-  const user = useAuthStore((state) => state.user);
+  const isOwner = useAuthStore((state) => state.isOwner);
 
   if (authStatus === 'checking') return null;
 
   if (authStatus === 'not-authenticated') return <Navigate to="/auth/login" />;
 
-  if (!user?.isShopOwner) return <Navigate to="/admin" />;
+  if (!isOwner) return <Navigate to="/admin" />;
 
   return children;
 };

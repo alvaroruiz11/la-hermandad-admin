@@ -11,16 +11,37 @@ type AuthState = {
   token: string | null;
   authStatus: AuthStatus;
 
+  // Getters
+  fullName: () => string;
+  email: () => string;
+  isOwner: () => boolean;
+
   // Acciones
   login: (email: string, password: string) => Promise<boolean>;
   checkAuthStatus: () => Promise<boolean>;
   logout: () => void;
 };
 
-export const useAuthStore = create<AuthState>()((set) => ({
+export const useAuthStore = create<AuthState>()((set, get) => ({
   user: null,
   token: null,
   authStatus: 'checking',
+
+  fullName: () => {
+    const { user } = get();
+    if (!user) return '';
+    return `${user.firstName} ${user.lastName ?? ''}`;
+  },
+  email: () => {
+    const { user } = get();
+    if (!user) return '';
+    return user.email;
+  },
+
+  isOwner: () => {
+    const { user } = get();
+    return user?.isShopOwner || false;
+  },
 
   login: async (email: string, password: string) => {
     try {

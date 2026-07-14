@@ -8,8 +8,13 @@ import {
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { ThemeToggle } from '@/shared/components/ThemeToggle';
 import { ProfileMenu } from './ProfileMenu';
+import { useAuthStore } from '@/auth/store/auth.store';
 
 export const TopNav = () => {
+  const fullName = useAuthStore((state) => state.fullName);
+  const email = useAuthStore((state) => state.email);
+  const logout = useAuthStore((state) => state.logout);
+
   return (
     <nav className="px-3 sm:px-6 flex items-center justify-between bg-background border-b h-full">
       <div className="font-medium text-sm hidden md:flex items-center space-x-1 truncate max-w-75">
@@ -37,7 +42,11 @@ export const TopNav = () => {
             align="end"
             className="w-auto bg-background! border rounded-lg shadow-lg p-2"
           >
-            <ProfileMenu />
+            <ProfileMenu
+              fullName={fullName()}
+              email={email()}
+              onLogout={logout}
+            />
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
