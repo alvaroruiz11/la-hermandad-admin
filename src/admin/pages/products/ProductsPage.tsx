@@ -2,12 +2,13 @@ import { Link } from 'react-router';
 import { Plus, Tag } from 'lucide-react';
 
 import { AdminTitle } from '@/admin/components/AdminTitle';
-import { Button } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { DataStatusFilter } from '@/shared/components/DataStatusFilter';
 import { DataSort, type SortOption } from '@/shared/components/DataSort';
 import { ProductsTable } from '@/products/components/ProductsTable';
 import { SearchInput } from '@/shared/components/SearchInput';
+import { useProducts } from '@/products/hooks/useProducts';
 
 const productsSortOptions: SortOption[] = [
   {
@@ -45,13 +46,18 @@ const productsSortOptions: SortOption[] = [
 ];
 
 const ProductsPage = () => {
+  const { data } = useProducts();
+
   return (
     <>
       <div className="flex items-center justify-between">
         <AdminTitle title="Productos" Icon={Tag} />
-        <Button size="sm" render={<Link to="/admin/products/new" />}>
+        <Link
+          to="/admin/products/new"
+          className={buttonVariants({ size: 'sm' })}
+        >
           <Plus /> Agregar producto
-        </Button>
+        </Link>
       </div>
       <div className="mt-3">
         <Card className="p-0">
@@ -74,7 +80,7 @@ const ProductsPage = () => {
                 <DataSort options={productsSortOptions} />
               </div>
             </div>
-            <ProductsTable />
+            <ProductsTable products={data?.results || []} />
           </CardContent>
         </Card>
       </div>

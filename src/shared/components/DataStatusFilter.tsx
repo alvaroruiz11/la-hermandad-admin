@@ -22,7 +22,7 @@ export const DataStatusFilter = ({ options }: Props) => {
     <div className="flex items-center gap-2">
       {options.map((option) => (
         <Button
-          key={option.value}
+          key={option.label}
           size="sm"
           variant={queryStatus === option.value ? 'secondary' : 'ghost'}
           onClick={() => handleStatusChange(option.value)}

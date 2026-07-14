@@ -1,5 +1,4 @@
 import { Image } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
   Table,
@@ -9,8 +8,14 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { ProductStatusBadge } from './ProductStatusBadge';
+import type { Product } from '../interfaces/product.interface';
 
-export const ProductsTable = () => {
+interface Props {
+  products: Product[];
+}
+
+export const ProductsTable = ({ products }: Props) => {
   return (
     <Table>
       <TableHeader className="bg-muted/50">
@@ -25,65 +30,40 @@ export const ProductsTable = () => {
         </TableRow>
       </TableHeader>
       <TableBody className="relative">
-        {/* {true && (
-          <div className="absolute inset-0 w-full h-full bg-muted/70"></div>
-        )} */}
-        <TableRow>
-          <TableCell>
-            <Checkbox />
-          </TableCell>
-          <TableCell>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center justify-center rounded-sm border w-9 h-9 dark:bg-muted">
-                <Image className="text-muted-foreground size-4" />
+        {products.map((product) => (
+          <TableRow key={product.id}>
+            <TableCell>
+              <Checkbox />
+            </TableCell>
+            <TableCell>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center justify-center rounded-sm border w-9 h-9 dark:bg-muted">
+                  <Image className="text-muted-foreground size-4" />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <span className="font-medium leading-none hover:underline">
+                    {product.title}
+                  </span>
+                </div>
               </div>
-              <div className="flex flex-col gap-1">
-                <span className="font-medium leading-none hover:underline">
-                  Empanda de Carne
-                </span>
-              </div>
-            </div>
-          </TableCell>
-          <TableCell>
-            <Badge className="capitalize text-emerald-800 bg-emerald-200 dark:text-emerald-200 dark:bg-emerald-800/40">
-              Activo
-            </Badge>
-          </TableCell>
-          <TableCell>
-            <span>1200</span>
-          </TableCell>
-          <TableCell>
-            <span>Almuerzo</span>
-          </TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell>
-            <Checkbox />
-          </TableCell>
-          <TableCell>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center justify-center rounded-sm border w-9 h-9 dark:bg-muted">
-                <Image className="text-muted-foreground size-4" />
-              </div>
-              <div className="flex flex-col gap-1">
-                <span className="font-medium leading-none hover:underline">
-                  Empanda de Carne
-                </span>
-              </div>
-            </div>
-          </TableCell>
-          <TableCell>
-            <Badge className="capitalize text-emerald-800 bg-emerald-200 dark:text-emerald-200 dark:bg-emerald-800/40">
-              Activo
-            </Badge>
-          </TableCell>
-          <TableCell>
-            <span>1200</span>
-          </TableCell>
-          <TableCell>
-            <span>Almuerzo</span>
-          </TableCell>
-        </TableRow>
+            </TableCell>
+            <TableCell>
+              <ProductStatusBadge status={product.status} />
+            </TableCell>
+            <TableCell>
+              <span>
+                {!product.trackInventory
+                  ? 'No se hace seguimiento del inventario'
+                  : `${product.inventoryQuantity} en existencias`}
+              </span>
+            </TableCell>
+            <TableCell>
+              <span className="capitalize">
+                {product.category?.name ?? 'Sin categoría'}
+              </span>
+            </TableCell>
+          </TableRow>
+        ))}
       </TableBody>
     </Table>
   );

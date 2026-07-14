@@ -1,4 +1,5 @@
-import { Button } from '@/components/ui/button';
+import { useSearchParams } from 'react-router';
+import { buttonVariants } from '@/components/ui/button';
 import { ArrowUpDown } from 'lucide-react';
 import {
   DropdownMenu,
@@ -7,7 +8,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useSearchParams } from 'react-router';
 
 export interface SortOption {
   label: string;
@@ -42,11 +42,12 @@ export const DataSort = ({ options }: Props) => {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
-        <Button size="sm" variant="outline">
-          <ArrowUpDown />
-        </Button>
+      <DropdownMenuTrigger
+        className={buttonVariants({ size: 'icon-sm', variant: 'outline' })}
+      >
+        <ArrowUpDown />
       </DropdownMenuTrigger>
+
       <DropdownMenuContent align="end" className="w-auto p-2">
         {options.map((op) => (
           <DropdownMenuCheckboxItem
