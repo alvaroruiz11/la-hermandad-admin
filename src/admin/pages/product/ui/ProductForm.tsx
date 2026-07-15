@@ -1,4 +1,5 @@
 import { Link } from 'react-router';
+import { useForm, useWatch } from 'react-hook-form';
 import { CircleQuestionMark, CloudUpload } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -21,14 +22,37 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from '@/components/ui/hover-card';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import {
   NativeSelect,
   NativeSelectOption,
 } from '@/components/ui/native-select';
 import { Switch } from '@/components/ui/switch';
+import type { Product } from '@/products/interfaces/product.interface';
 
-export const ProductForm = () => {
+interface Props {
+  product?: Product;
+}
+
+interface FormInputs extends Product {
+  categoryId?: string;
+}
+
+export const ProductForm = ({ product }: Props) => {
+  const {
+    register,
+    control,
+    formState: { errors },
+    setValue,
+  } = useForm<FormInputs>({
+    defaultValues: product,
+  });
+
+  const trackInventory = useWatch({
+    control,
+    name: 'trackInventory',
+  });
+
   return (
     <form>
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
@@ -39,13 +63,20 @@ export const ProductForm = () => {
               <FieldGroup>
                 <Field>
                   <FieldLabel>Título</FieldLabel>
-                  <Input type="text" placeholder="Empanada de Carne" />
+                  <Input
+                    type="text"
+                    placeholder="Empanada de Carne"
+                    {...register('title', {
+                      required: 'El título es requerido',
+                    })}
+                  />
                 </Field>
                 <Field>
                   <FieldLabel>Descripción</FieldLabel>
                   <Textarea
                     placeholder="Descripción del producto"
                     className="min-h-25 max-h-25"
+                    {...register('description')}
                   ></Textarea>
                 </Field>
                 <Field>
@@ -73,10 +104,11 @@ export const ProductForm = () => {
 
                 <Field>
                   <FieldLabel>Categoría</FieldLabel>
-                  <Input
-                    type="text"
-                    placeholder="Elija una categoría de producto"
-                  />
+                  <NativeSelect {...register('categoryId')}>
+                    <NativeSelectOption value="">
+                      Elija una categoría de producto
+                    </NativeSelectOption>
+                  </NativeSelect>
                 </Field>
               </FieldGroup>
             </CardContent>
@@ -92,7 +124,17 @@ export const ProductForm = () => {
                     {/* <Input type="text" placeholder="0.00" /> */}
                     <InputGroup>
                       <InputGroupAddon>Bs</InputGroupAddon>
-                      <InputGroupInput type="text" placeholder="0.00" />
+                      <InputGroupInput
+                        type="number"
+                        placeholder="0.00"
+                        {...register('price', {
+                          required: 'El precio es requerido',
+                          min: {
+                            value: 0,
+                            message: 'El precio debe ser mayor a 0',
+                          },
+                        })}
+                      />
                     </InputGroup>
                   </Field>
                   <FieldSeparator />
@@ -118,7 +160,11 @@ export const ProductForm = () => {
                           </HoverCardContent>
                         </HoverCard>
                       </InputGroupAddon>
-                      <InputGroupInput type="text" placeholder="0.00" />
+                      <InputGroupInput
+                        type="text"
+                        placeholder="0.00"
+                        {...register('compareAtPrice')}
+                      />
                     </InputGroup>
                   </Field>
                   <FieldSeparator />
@@ -126,7 +172,11 @@ export const ProductForm = () => {
                     <Field>
                       <InputGroup>
                         <InputGroupAddon>Costo</InputGroupAddon>
-                        <InputGroupInput type="text" placeholder="0.00" />
+                        <InputGroupInput
+                          type="text"
+                          placeholder="0.00"
+                          {...register('costPrice')}
+                        />
                       </InputGroup>
                     </Field>
                     <Field>
@@ -163,30 +213,46 @@ export const ProductForm = () => {
                   <FieldLegend>Inventario</FieldLegend>
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-muted-foreground">
-                      Inventario con seguimiento
+                      {trackInventory
+                        ? 'Inventario con seguimiento'
+                        : 'Inventario sin seguimiento'}
                     </span>
-                    <Switch size="sm" checked />
+                    <Switch
+                      size="sm"
+                      checked={trackInventory}
+                      onCheckedChange={(value) =>
+                        setValue('trackInventory', value)
+                      }
+                    />
                   </div>
                 </div>
                 <FieldGroup>
-                  <div className="border rounded-xl">
-                    <div className="px-3 py-1.5 flex items-center justify-between bg-muted/50 rounded-t-xl">
-                      <span className="text-sm text-muted-foreground">
-                        Cantidad
-                      </span>
-                      <span className="text-sm text-muted-foreground">
-                        Cantidad
-                      </span>
+                  {trackInventory && (
+                    <div className="border rounded-xl">
+                      <div className="px-3 py-1.5 flex items-center justify-between bg-muted/50 rounded-t-xl">
+                        <span className="text-sm text-muted-foreground">
+                          Cantidad
+                        </span>
+                        <span className="text-sm text-muted-foreground">
+                          Cantidad
+                        </span>
+                      </div>
+                      <div className="px-3 py-1.5 flex items-center justify-between rounded-b-xl">
+                        <span>Shop location</span>
+                        <Input
+                          type="number"
+                          placeholder="0"
+                          className="w-30"
+                          {...register('inventoryQuantity')}
+                        />
+                      </div>
                     </div>
-                    <div className="px-3 py-1.5 flex items-center justify-between rounded-b-xl">
-                      <span>Shop location</span>
-                      <Input type="number" placeholder="0" className="w-30" />
-                    </div>
-                  </div>
+                  )}
+
                   <FieldSeparator />
                   <Field>
                     <FieldLabel>SKU (Código de artículo)</FieldLabel>
-                    <Input type="text" />
+                    <Input type="text" {...register('sku')} />
                   </Field>
                 </FieldGroup>
               </FieldSet>
@@ -199,10 +265,16 @@ export const ProductForm = () => {
               <FieldGroup>
                 <Field>
                   <FieldLabel>Estado</FieldLabel>
-                  <NativeSelect>
-                    <NativeSelectOption>Activo</NativeSelectOption>
-                    <NativeSelectOption>Borrador</NativeSelectOption>
-                    <NativeSelectOption>Archivado</NativeSelectOption>
+                  <NativeSelect {...register('status')}>
+                    <NativeSelectOption value="ACTIVE">
+                      Activo
+                    </NativeSelectOption>
+                    <NativeSelectOption value="DRAFT">
+                      Borrador
+                    </NativeSelectOption>
+                    <NativeSelectOption value="ARCHIVED">
+                      Archivado
+                    </NativeSelectOption>
                   </NativeSelect>
                 </Field>
               </FieldGroup>
@@ -211,13 +283,12 @@ export const ProductForm = () => {
         </div>
       </div>
       <div className="flex items-center justify-end gap-2 mt-4">
-        <Button
-          type="button"
-          variant="outline"
-          render={<Link to="/admin/products" />}
+        <Link
+          to="/admin/products"
+          className={buttonVariants({ variant: 'outline' })}
         >
           Cancelar
-        </Button>
+        </Link>
         <Button type="submit">Guardar</Button>
       </div>
     </form>

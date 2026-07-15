@@ -1,3 +1,4 @@
+import { Link } from 'react-router';
 import { Image } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -41,9 +42,12 @@ export const ProductsTable = ({ products }: Props) => {
                   <Image className="text-muted-foreground size-4" />
                 </div>
                 <div className="flex flex-col gap-1">
-                  <span className="font-medium leading-none hover:underline">
+                  <Link
+                    to={`/admin/products/${product.id}`}
+                    className="font-medium leading-none hover:underline"
+                  >
                     {product.title}
-                  </span>
+                  </Link>
                 </div>
               </div>
             </TableCell>

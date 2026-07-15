@@ -20,7 +20,7 @@ export const AdminTitle = ({ title, Icon, prevHref }: Props) => {
             size="icon-sm"
             onClick={() => navigate(prevHref)}
           >
-            <Icon size="size-4" />
+            <Icon className="size-4" />
           </Button>
           <ChevronRight className="size-3 text-muted-foreground mr-1" />
         </>
