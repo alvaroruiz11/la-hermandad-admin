@@ -1,6 +1,12 @@
 import { Link } from 'react-router';
 import { useForm, useWatch } from 'react-hook-form';
-import { CircleQuestionMark, CloudUpload } from 'lucide-react';
+import {
+  AlertCircle,
+  CircleQuestionMark,
+  CloudUpload,
+  Save,
+  X,
+} from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   Field,
@@ -28,6 +34,7 @@ import {
   NativeSelectOption,
 } from '@/components/ui/native-select';
 import { Switch } from '@/components/ui/switch';
+import { ProfitCalculator } from './ProfitCalculator';
 import type { Product } from '@/products/interfaces/product.interface';
 
 interface Props {
@@ -44,8 +51,19 @@ export const ProductForm = ({ product }: Props) => {
     control,
     formState: { errors },
     setValue,
+    handleSubmit,
   } = useForm<FormInputs>({
     defaultValues: product,
+  });
+
+  const price = useWatch({
+    control,
+    name: 'price',
+  });
+
+  const costPrice = useWatch({
+    control,
+    name: 'costPrice',
   });
 
   const trackInventory = useWatch({
@@ -54,7 +72,7 @@ export const ProductForm = ({ product }: Props) => {
   });
 
   return (
-    <form>
+    <form onSubmit={handleSubmit((data) => console.log(data))}>
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
         <div className="md:col-span-8 space-y-4">
           {/* Informacion general */}
@@ -69,14 +87,21 @@ export const ProductForm = ({ product }: Props) => {
                     {...register('title', {
                       required: 'El título es requerido',
                     })}
+                    aria-invalid={!!errors.title}
                   />
+                  {errors.title && (
+                    <p className="text-sm text-destructive animate-in fade-in slide-in-from-top-1">
+                      {errors.title.message}
+                    </p>
+                  )}
                 </Field>
                 <Field>
                   <FieldLabel>Descripción</FieldLabel>
                   <Textarea
                     placeholder="Descripción del producto"
-                    className="min-h-25 max-h-25"
+                    className="min-h-32 max-h-32"
                     {...register('description')}
+                    aria-invalid={!!errors.description}
                   ></Textarea>
                 </Field>
                 <Field>
@@ -91,7 +116,7 @@ export const ProductForm = ({ product }: Props) => {
                         Arrastra y suelta archivos aquí
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        Imágenes o videos (JPG, PNG, GIF, MP4)
+                        Imágenes (JPG, PNG, GIF)
                       </p>
                     </div>
                     <div>
@@ -104,7 +129,10 @@ export const ProductForm = ({ product }: Props) => {
 
                 <Field>
                   <FieldLabel>Categoría</FieldLabel>
-                  <NativeSelect {...register('categoryId')}>
+                  <NativeSelect
+                    {...register('categoryId')}
+                    aria-invalid={!!errors.categoryId}
+                  >
                     <NativeSelectOption value="">
                       Elija una categoría de producto
                     </NativeSelectOption>
@@ -134,8 +162,16 @@ export const ProductForm = ({ product }: Props) => {
                             message: 'El precio debe ser mayor a 0',
                           },
                         })}
+                        aria-invalid={!!errors.price}
+                        min={0}
+                        step={0.01}
                       />
                     </InputGroup>
+                    {errors.price && (
+                      <p className="text-sm text-destructive animate-in fade-in slide-in-from-top-1">
+                        {errors.price.message}
+                      </p>
+                    )}
                   </Field>
                   <FieldSeparator />
                   <Field className="w-fit">
@@ -161,45 +197,33 @@ export const ProductForm = ({ product }: Props) => {
                         </HoverCard>
                       </InputGroupAddon>
                       <InputGroupInput
-                        type="text"
+                        type="number"
                         placeholder="0.00"
-                        {...register('compareAtPrice')}
+                        min={0}
+                        step={0.01}
+                        {...register('compareAtPrice', {
+                          validate: {
+                            compareAtPrice: (value) =>
+                              Number(value) > Number(price) ||
+                              'El precio de comparación debe ser mayor que el precio',
+                          },
+                        })}
+                        aria-invalid={!!errors.compareAtPrice}
                       />
                     </InputGroup>
+                    {errors.compareAtPrice && (
+                      <p className="text-sm text-destructive animate-in fade-in slide-in-from-top-1">
+                        {errors.compareAtPrice.message}
+                      </p>
+                    )}
                   </Field>
-                  <FieldSeparator />
-                  <div className="grid grid-cols-3 gap-2">
-                    <Field>
-                      <InputGroup>
-                        <InputGroupAddon>Costo</InputGroupAddon>
-                        <InputGroupInput
-                          type="text"
-                          placeholder="0.00"
-                          {...register('costPrice')}
-                        />
-                      </InputGroup>
-                    </Field>
-                    <Field>
-                      <InputGroup>
-                        <InputGroupAddon>Beneficio</InputGroupAddon>
-                        <InputGroupInput
-                          type="text"
-                          placeholder="--"
-                          disabled
-                        />
-                      </InputGroup>
-                    </Field>
-                    <Field>
-                      <InputGroup>
-                        <InputGroupAddon>Margen</InputGroupAddon>
-                        <InputGroupInput
-                          type="text"
-                          placeholder="--"
-                          disabled
-                        />
-                      </InputGroup>
-                    </Field>
-                  </div>
+                  <hr />
+                  {/* Costo, Beneficio, margen */}
+                  <ProfitCalculator
+                    costPrice={costPrice}
+                    price={price}
+                    register={register('costPrice')}
+                  />
                 </FieldGroup>
               </FieldSet>
             </CardContent>
@@ -212,10 +236,15 @@ export const ProductForm = ({ product }: Props) => {
                 <div className="flex items-center justify-between">
                   <FieldLegend>Inventario</FieldLegend>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-muted-foreground">
-                      {trackInventory
-                        ? 'Inventario con seguimiento'
-                        : 'Inventario sin seguimiento'}
+                    <span className="text-xs text-muted-foreground inline-flex items-center gap-1">
+                      {trackInventory ? (
+                        'Inventario con seguimiento'
+                      ) : (
+                        <>
+                          Inventario sin seguimiento{' '}
+                          <AlertCircle className="size-3" />
+                        </>
+                      )}
                     </span>
                     <Switch
                       size="sm"
@@ -243,17 +272,43 @@ export const ProductForm = ({ product }: Props) => {
                           type="number"
                           placeholder="0"
                           className="w-30"
-                          {...register('inventoryQuantity')}
+                          {...register('inventoryQuantity', {
+                            min: {
+                              value: 0,
+                              message: 'La cantidad debe ser mayor o igual a 0',
+                            },
+                          })}
+                          aria-invalid={!!errors.inventoryQuantity}
                         />
                       </div>
                     </div>
                   )}
 
                   <FieldSeparator />
-                  <Field>
-                    <FieldLabel>SKU (Código de artículo)</FieldLabel>
-                    <Input type="text" {...register('sku')} />
-                  </Field>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <Field>
+                      <FieldLabel>SKU (Código de artículo)</FieldLabel>
+                      <Input
+                        type="text"
+                        {...register('sku', {
+                          pattern: {
+                            value: /^[A-Za-z0-9_-]+$/,
+                            message:
+                              'El SKU solo puede contener letras, números, guiones (-) y guiones bajos (_).',
+                          },
+                        })}
+                      />
+                      {errors.sku && (
+                        <p className="text-sm text-destructive animate-in fade-in slide-in-from-top-1">
+                          {errors.sku.message}
+                        </p>
+                      )}
+                    </Field>
+                    <Field>
+                      <FieldLabel>Código de barras</FieldLabel>
+                      <Input type="text" disabled />
+                    </Field>
+                  </div>
                 </FieldGroup>
               </FieldSet>
             </CardContent>
@@ -287,9 +342,13 @@ export const ProductForm = ({ product }: Props) => {
           to="/admin/products"
           className={buttonVariants({ variant: 'outline' })}
         >
+          <X />
           Cancelar
         </Link>
-        <Button type="submit">Guardar</Button>
+        <Button type="submit">
+          <Save />
+          Guardar
+        </Button>
       </div>
     </form>
   );

@@ -47,7 +47,7 @@ const ProductPage = () => {
               Más acciones
               <ChevronDown />
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-auto" align="end">
+            <DropdownMenuContent className="w-52" align="center">
               <DropdownMenuItem>
                 <Archive /> Archivar producto
               </DropdownMenuItem>
