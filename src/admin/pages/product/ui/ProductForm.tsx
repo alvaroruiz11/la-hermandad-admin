@@ -39,13 +39,17 @@ import type { Product } from '@/products/interfaces/product.interface';
 
 interface Props {
   product?: Product;
+
+  onSubmit: (
+    productLike: Partial<Product> & { categoryId: string },
+  ) => Promise<void>;
 }
 
 interface FormInputs extends Product {
-  categoryId?: string;
+  categoryId: string | null;
 }
 
-export const ProductForm = ({ product }: Props) => {
+export const ProductForm = ({ product, onSubmit }: Props) => {
   const {
     register,
     control,
@@ -53,7 +57,10 @@ export const ProductForm = ({ product }: Props) => {
     setValue,
     handleSubmit,
   } = useForm<FormInputs>({
-    defaultValues: product,
+    defaultValues: {
+      ...product,
+      categoryId: product?.category?.id ?? null,
+    },
   });
 
   const price = useWatch({
@@ -72,7 +79,7 @@ export const ProductForm = ({ product }: Props) => {
   });
 
   return (
-    <form onSubmit={handleSubmit((data) => console.log(data))}>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
         <div className="md:col-span-8 space-y-4">
           {/* Informacion general */}
@@ -133,7 +140,7 @@ export const ProductForm = ({ product }: Props) => {
                     {...register('categoryId')}
                     aria-invalid={!!errors.categoryId}
                   >
-                    <NativeSelectOption value="">
+                    <NativeSelectOption selected disabled>
                       Elija una categoría de producto
                     </NativeSelectOption>
                   </NativeSelect>
@@ -201,13 +208,7 @@ export const ProductForm = ({ product }: Props) => {
                         placeholder="0.00"
                         min={0}
                         step={0.01}
-                        {...register('compareAtPrice', {
-                          validate: {
-                            compareAtPrice: (value) =>
-                              Number(value) > Number(price) ||
-                              'El precio de comparación debe ser mayor que el precio',
-                          },
-                        })}
+                        {...register('compareAtPrice')}
                         aria-invalid={!!errors.compareAtPrice}
                       />
                     </InputGroup>

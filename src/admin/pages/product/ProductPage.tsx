@@ -1,4 +1,4 @@
-import { Navigate, useParams } from 'react-router';
+import { Navigate, useNavigate, useParams } from 'react-router';
 import { Archive, ChevronDown, Tag, Trash } from 'lucide-react';
 import { AdminTitle } from '@/admin/components/AdminTitle';
 import { ProductForm } from './ui/ProductForm';
@@ -11,14 +11,47 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { buttonVariants } from '@/components/ui/button';
+import { createUpdateProductAction } from '@/products/actions/create-update-product.action';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import type { Product } from '@/products/interfaces/product.interface';
 
 const ProductPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+
+  const queryClient = useQueryClient();
 
   const { data: product, isLoading, isError } = useProduct(id || '');
 
+  const mutation = useMutation({
+    mutationFn: createUpdateProductAction,
+    onSuccess: (product: Product) => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({
+        queryKey: ['product', { id: product.id }],
+      });
+
+      queryClient.setQueryData(['product', { id: product.id }], product);
+    },
+  });
+
   const title =
     id === 'new' ? 'Agregar producto' : (product?.title ?? 'Editar producto');
+
+  const handleSubmit = async (
+    productLike: Partial<Product> & { categoryId: string },
+  ) => {
+    await mutation.mutateAsync(productLike, {
+      onSuccess: (data) => {
+        alert('Producto guardado');
+        navigate(`/admin/products/${data.id}`, { replace: true });
+      },
+      onError(error) {
+        console.log(error);
+        alert('Error al guardar producto');
+      },
+    });
+  };
 
   if (isError) {
     return <Navigate to="/admin/products" />;
@@ -59,7 +92,7 @@ const ProductPage = () => {
         )}
       </div>
       <div className="mt-3">
-        <ProductForm product={product} />
+        <ProductForm product={product} onSubmit={handleSubmit} />
       </div>
     </div>
   );

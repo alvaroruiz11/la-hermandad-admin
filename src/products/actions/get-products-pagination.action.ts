@@ -1,6 +1,6 @@
 import { laHermandadApi } from '@/api/la-hermandad-api';
-import type { ProductsResponse } from '../interfaces/products-response.interface';
 import { sleep } from '@/lib/sleep';
+import type { ProductsResponse } from '../interfaces/products-response.interface';
 
 interface Options {
   page?: number;

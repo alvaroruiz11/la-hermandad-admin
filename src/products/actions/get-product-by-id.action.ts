@@ -1,18 +1,19 @@
 import { laHermandadApi } from '@/api/la-hermandad-api';
 import type { Product } from '../interfaces/product.interface';
 
-const emptyProduct: Product = {
+const emptyProduct: Product & { categoryId: string | null } = {
   id: 'new',
   title: '',
-  description: '',
+  description: null,
   price: '',
   trackInventory: true,
   inventoryQuantity: 0,
-  sku: '',
+  sku: null,
   status: 'ACTIVE',
   category: null,
   compareAtPrice: null,
   costPrice: null,
+  categoryId: null,
 };
 
 export const getProductByIdAction = async (id: string): Promise<Product> => {

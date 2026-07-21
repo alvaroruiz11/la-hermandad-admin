@@ -36,7 +36,13 @@ export const ProfitCalculator = ({ costPrice, price, register }: Props) => {
           <span>Costo</span>
           <InputGroup className="max-w-24">
             <InputGroupAddon>Bs</InputGroupAddon>
-            <InputGroupInput type="number" placeholder="0.00" {...register} />
+            <InputGroupInput
+              type="number"
+              placeholder="0.00"
+              {...register}
+              min={0}
+              step={0.01}
+            />
           </InputGroup>
         </div>
       </div>
