@@ -34,11 +34,13 @@ import {
   NativeSelectOption,
 } from '@/components/ui/native-select';
 import { Switch } from '@/components/ui/switch';
+import { Spinner } from '@/components/ui/spinner';
 import { ProfitCalculator } from './ProfitCalculator';
 import type { Product } from '@/products/interfaces/product.interface';
 
 interface Props {
   product?: Product;
+  isPending: boolean;
 
   onSubmit: (
     productLike: Partial<Product> & { categoryId: string },
@@ -49,7 +51,7 @@ interface FormInputs extends Product {
   categoryId: string | null;
 }
 
-export const ProductForm = ({ product, onSubmit }: Props) => {
+export const ProductForm = ({ product, isPending, onSubmit }: Props) => {
   const {
     register,
     control,
@@ -127,7 +129,7 @@ export const ProductForm = ({ product, onSubmit }: Props) => {
                       </p>
                     </div>
                     <div>
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" type="button">
                         Subir archivo
                       </Button>
                     </div>
@@ -140,7 +142,7 @@ export const ProductForm = ({ product, onSubmit }: Props) => {
                     {...register('categoryId')}
                     aria-invalid={!!errors.categoryId}
                   >
-                    <NativeSelectOption selected disabled>
+                    <NativeSelectOption defaultChecked>
                       Elija una categoría de producto
                     </NativeSelectOption>
                   </NativeSelect>
@@ -192,6 +194,7 @@ export const ProductForm = ({ product, onSubmit }: Props) => {
                             <Button
                               variant="ghost"
                               size="icon"
+                              type="button"
                               className="text-muted-foreground"
                             >
                               <CircleQuestionMark />
@@ -342,13 +345,14 @@ export const ProductForm = ({ product, onSubmit }: Props) => {
         <Link
           to="/admin/products"
           className={buttonVariants({ variant: 'outline' })}
+          type="button"
         >
           <X />
           Cancelar
         </Link>
-        <Button type="submit">
-          <Save />
-          Guardar
+        <Button type="submit" disabled={isPending}>
+          {isPending ? <Spinner /> : <Save />}
+          {isPending ? 'Guardando...' : 'Guardar'}
         </Button>
       </div>
     </form>

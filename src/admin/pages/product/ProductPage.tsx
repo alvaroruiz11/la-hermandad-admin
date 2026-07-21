@@ -11,29 +11,13 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { buttonVariants } from '@/components/ui/button';
-import { createUpdateProductAction } from '@/products/actions/create-update-product.action';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { Product } from '@/products/interfaces/product.interface';
 
 const ProductPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const queryClient = useQueryClient();
-
-  const { data: product, isLoading, isError } = useProduct(id || '');
-
-  const mutation = useMutation({
-    mutationFn: createUpdateProductAction,
-    onSuccess: (product: Product) => {
-      queryClient.invalidateQueries({ queryKey: ['products'] });
-      queryClient.invalidateQueries({
-        queryKey: ['product', { id: product.id }],
-      });
-
-      queryClient.setQueryData(['product', { id: product.id }], product);
-    },
-  });
+  const { data: product, isLoading, isError, mutation } = useProduct(id || '');
 
   const title =
     id === 'new' ? 'Agregar producto' : (product?.title ?? 'Editar producto');
@@ -92,7 +76,11 @@ const ProductPage = () => {
         )}
       </div>
       <div className="mt-3">
-        <ProductForm product={product} onSubmit={handleSubmit} />
+        <ProductForm
+          product={product}
+          onSubmit={handleSubmit}
+          isPending={mutation.isPending}
+        />
       </div>
     </div>
   );
