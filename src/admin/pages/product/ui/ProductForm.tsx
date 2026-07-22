@@ -352,7 +352,7 @@ export const ProductForm = ({ product, isPending, onSubmit }: Props) => {
         </Link>
         <Button type="submit" disabled={isPending}>
           {isPending ? <Spinner /> : <Save />}
-          {isPending ? 'Guardando...' : 'Guardar'}
+          {isPending ? 'Guardando' : 'Guardar'}
         </Button>
       </div>
     </form>

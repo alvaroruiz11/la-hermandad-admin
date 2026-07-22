@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { buttonVariants } from '@/components/ui/button';
+import { toast } from 'sonner';
 import type { Product } from '@/products/interfaces/product.interface';
 
 const ProductPage = () => {
@@ -27,12 +28,12 @@ const ProductPage = () => {
   ) => {
     await mutation.mutateAsync(productLike, {
       onSuccess: (data) => {
-        alert('Producto guardado');
+        toast.success('Producto guardado');
         navigate(`/admin/products/${data.id}`, { replace: true });
       },
       onError(error) {
         console.log(error);
-        alert('Error al guardar producto');
+        toast.error('Error al guardar producto');
       },
     });
   };

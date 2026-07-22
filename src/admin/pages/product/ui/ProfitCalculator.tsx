@@ -11,8 +11,9 @@ interface Props {
   register: UseFormRegisterReturn<'costPrice'>;
 }
 export const ProfitCalculator = ({ costPrice, price, register }: Props) => {
-  const benefitPrice = costPrice ? Number(price) - Number(costPrice) : null;
-  const margin = costPrice
+  const benefitPrice =
+    price && costPrice ? Number(price) - Number(costPrice) : null;
+  const margin = benefitPrice
     ? ((Number(price) - Number(costPrice)) / Number(price)) * 100
     : null;
 
@@ -47,13 +48,13 @@ export const ProfitCalculator = ({ costPrice, price, register }: Props) => {
         </div>
       </div>
       <div className="border p-2 rounded-lg">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <span>Beneficio</span>
           <span className={textColor}>{formatCurrency(benefitPrice)}</span>
         </div>
       </div>
       <div className="border p-2 rounded-lg">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <span>Margen</span>
           <span className={textColor}>{formatPercent(margin)}</span>
         </div>

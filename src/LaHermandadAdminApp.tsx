@@ -6,6 +6,7 @@ import {
   useQuery,
 } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { Toaster } from 'sonner';
 import { appRouter } from './app-router';
 import { ThemeProvider } from './components/theme-provider';
 import { useAuthStore } from './auth/store/auth.store';
@@ -33,6 +34,7 @@ export const LaHermandadAdminApp = () => {
     <QueryClientProvider client={queryClient}>
       <CheckAuthProvider>
         <ThemeProvider defaultTheme="dark" storageKey="theme">
+          <Toaster position="bottom-center" />
           <RouterProvider router={appRouter} />
         </ThemeProvider>
       </CheckAuthProvider>
