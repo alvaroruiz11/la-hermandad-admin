@@ -8,6 +8,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { DataSort, type SortOption } from '@/shared/components/DataSort';
 import { CustomersTable } from '@/customers/components/CustomersTable';
 import { SearchInput } from '@/shared/components/SearchInput';
+import { useCustomers } from '@/customers/hooks/useCustomers';
+import { Spinner } from '@/components/ui/spinner';
+import { DataEmptyState } from '@/shared/components/DataEmptyState';
 
 const customersSortOptions: SortOption[] = [
   {
@@ -53,6 +56,8 @@ const customersSortOptions: SortOption[] = [
 ];
 
 const CustomersPage = () => {
+  const { data, isLoading } = useCustomers();
+
   return (
     <>
       <div className="flex items-center justify-between">
@@ -68,7 +73,15 @@ const CustomersPage = () => {
               <SearchInput className="max-w-xs" placeholder="Buscar cliente" />
               <DataSort options={customersSortOptions} />
             </div>
-            <CustomersTable />
+            {isLoading ? (
+              <div className="flex items-center justify-center h-24">
+                <Spinner />
+              </div>
+            ) : data?.results && data.results.length > 0 ? (
+              <CustomersTable customers={data?.results || []} />
+            ) : (
+              <DataEmptyState title="No se encontraron clientes" />
+            )}
           </CardContent>
         </Card>
       </div>

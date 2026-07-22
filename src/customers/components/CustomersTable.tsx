@@ -7,8 +7,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import type { Customer } from '../interfaces/customer.interface';
 
-export const CustomersTable = () => {
+interface Props {
+  customers: Customer[];
+}
+
+export const CustomersTable = ({ customers }: Props) => {
   return (
     <Table>
       <TableHeader className="bg-muted/50">
@@ -29,30 +34,29 @@ export const CustomersTable = () => {
           </TableHead>
         </TableRow>
       </TableHeader>
-      <TableBody className="relative">
-        {/* {true && (
-          <div className="absolute inset-0 w-full h-full bg-muted/70"></div>
-        )} */}
-        <TableRow>
-          <TableCell>
-            <Checkbox />
-          </TableCell>
-          <TableCell>
-            <span className="font-medium leading-none hover:underline">
-              Juan Martinez
-            </span>
-          </TableCell>
-          <TableCell>+591 78436806</TableCell>
-          <TableCell>
-            <span>25/06/2026</span>
-          </TableCell>
-          <TableCell>
-            <span>34</span>
-          </TableCell>
-          <TableCell>
-            <span>Bs 340.00</span>
-          </TableCell>
-        </TableRow>
+      <TableBody>
+        {customers.map((customer) => (
+          <TableRow key={customer.id}>
+            <TableCell>
+              <Checkbox />
+            </TableCell>
+            <TableCell>
+              <span className="font-medium leading-none hover:underline">
+                {customer.displayName}
+              </span>
+            </TableCell>
+            <TableCell>{customer.phone}</TableCell>
+            <TableCell>
+              <span>{customer.createdAt.toLocaleString()}</span>
+            </TableCell>
+            <TableCell>
+              <span>{customer.numberOfOrders}</span>
+            </TableCell>
+            <TableCell>
+              <span>{customer.amountSpent}</span>
+            </TableCell>
+          </TableRow>
+        ))}
       </TableBody>
     </Table>
   );
