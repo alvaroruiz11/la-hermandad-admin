@@ -18,8 +18,6 @@ export const createUpdateProductAction = async (
   const price = Number(rest.price);
   rest.inventoryQuantity = Number(rest.inventoryQuantity || 0);
 
-  console.log({ ...rest, costPrice, compareAtPrice, price });
-
   try {
     const { data } = await laHermandadApi<Product>({
       url: isCrating ? '/products' : `/products/${id}`,

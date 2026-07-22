@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getProductByIdAction } from '../actions/get-product-by-id.action';
 import type { Product } from '../interfaces/product.interface';
 import { createUpdateProductAction } from '../actions/create-update-product.action';
+import { deleteProductByIdAction } from '../actions/delete-product-by-id.action';
 
 export const useProduct = (id: string) => {
   const queryClient = useQueryClient();
@@ -24,11 +25,25 @@ export const useProduct = (id: string) => {
     },
   });
 
+  const deleteProduct = async (id: string): Promise<boolean> => {
+    const isDeletingProduct = await deleteProductByIdAction(id);
+    if (isDeletingProduct) {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.removeQueries({
+        queryKey: ['product', { id: id }],
+      });
+
+      return true;
+    }
+    return false;
+  };
+
   return {
     // Properties
     ...query,
     mutation,
 
     // Methods
+    deleteProduct,
   };
 };
