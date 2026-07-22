@@ -8,6 +8,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import type { Customer } from '../interfaces/customer.interface';
+import { Formatter } from '@/lib/formatter';
+import { Link } from 'react-router';
 
 interface Props {
   customers: Customer[];
@@ -41,19 +43,20 @@ export const CustomersTable = ({ customers }: Props) => {
               <Checkbox />
             </TableCell>
             <TableCell>
-              <span className="font-medium leading-none hover:underline">
+              <Link
+                className="font-medium leading-none hover:underline"
+                to={`/admin/customers/${customer.id}`}
+              >
                 {customer.displayName}
-              </span>
+              </Link>
             </TableCell>
             <TableCell>{customer.phone}</TableCell>
             <TableCell>
-              <span>{customer.createdAt.toLocaleString()}</span>
+              <span>{Formatter.dateTime(customer.createdAt)}</span>
             </TableCell>
+            <TableCell>{customer.numberOfOrders}</TableCell>
             <TableCell>
-              <span>{customer.numberOfOrders}</span>
-            </TableCell>
-            <TableCell>
-              <span>{customer.amountSpent}</span>
+              <span>{Formatter.currency(customer.amountSpent)}</span>
             </TableCell>
           </TableRow>
         ))}
