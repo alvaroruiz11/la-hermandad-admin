@@ -15,8 +15,13 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from '@/components/ui/input-group';
+import type { Customer } from '@/customers/interfaces/customer.interface';
 
-export const CustomerForm = () => {
+interface Props {
+  customer: Customer;
+}
+
+export const CustomerForm = ({ customer }: Props) => {
   return (
     <form>
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
