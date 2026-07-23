@@ -6,6 +6,7 @@ const AdminLayout = lazy(() => import('../layout/AuthLayout'));
 const DashboardPage = lazy(() => import('../pages/dashboard/DashboardPage'));
 const ProductsPage = lazy(() => import('../pages/products/ProductsPage'));
 const ProductPage = lazy(() => import('../pages/product/ProductPage'));
+// const CategoriesPage = lazy(() => import('../pages/categories/CategoriesPage'));
 const CustomersPage = lazy(() => import('../pages/customers/CustomersPage'));
 const CustomerPage = lazy(() => import('../pages/customer/CustomerPage'));
 
@@ -32,6 +33,10 @@ export const adminRouter: RouteObject = {
       path: 'products/:id',
       element: <ProductPage />,
     },
+    // {
+    //   path: 'categories',
+    //   element: <CategoriesPage />,
+    // },
     {
       path: 'customers',
       element: <CustomersPage />,
@@ -40,12 +45,5 @@ export const adminRouter: RouteObject = {
       path: 'customers/:id',
       element: <CustomerPage />,
     },
-    // {
-    //   path: 'products/:id',
-    //   element: <ProductPage />,
-    //   handle: {
-    //     breadcrumb: 'Producto',
-    //   },
-    // },
   ],
 };
