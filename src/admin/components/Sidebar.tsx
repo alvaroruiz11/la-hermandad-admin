@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
-import { Home, Settings, Tag, User } from 'lucide-react';
+import { Home, Menu, Settings, Tag, User } from 'lucide-react';
 
 import { NavItem } from './NavItem';
+import { Button } from '@/components/ui/button';
 
 export const Sidebar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -13,6 +14,13 @@ export const Sidebar = () => {
 
   return (
     <>
+      <Button
+        variant="ghost"
+        className="lg:hidden fixed top-4 left-4 z-70"
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+      >
+        <Menu className="size-5 text-neutral-600 dark:text-neutral-300" />
+      </Button>
       <nav
         className={`
                 fixed inset-y-0 left-0 z-70 w-64 bg-background transform transition-transform duration-200 ease-in-out
@@ -93,7 +101,7 @@ export const Sidebar = () => {
 
       {isMobileMenuOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-65 lg:hidden"
+          className="fixed inset-0 bg-black/50 z-65 lg:hidden"
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}
