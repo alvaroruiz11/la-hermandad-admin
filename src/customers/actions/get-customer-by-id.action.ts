@@ -1,8 +1,9 @@
 import { laHermandadApi } from '@/api/la-hermandad-api';
 import type { Customer } from '../interfaces/customer.interface';
+import { sleep } from '@/lib/sleep';
 
 const emptyCustomer: Customer = {
-  id: '',
+  id: 'new',
   displayName: '',
   firstName: '',
   lastName: null,
@@ -17,6 +18,8 @@ const emptyCustomer: Customer = {
 };
 
 export const getCustomerByIdAction = async (id: string): Promise<Customer> => {
+  await sleep(1500);
+
   if (id === 'new') {
     return emptyCustomer;
   }
