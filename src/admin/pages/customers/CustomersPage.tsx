@@ -1,4 +1,4 @@
-import { Link } from 'react-router';
+import { Link, useSearchParams } from 'react-router';
 import { Plus, User } from 'lucide-react';
 
 import { AdminTitle } from '@/admin/components/AdminTitle';
@@ -56,7 +56,21 @@ const customersSortOptions: SortOption[] = [
 ];
 
 const CustomersPage = () => {
-  const { data, isLoading } = useCustomers();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const { data, isLoading, q } = useCustomers();
+
+  const handleSearchCustomer = (query: string) => {
+    const params = new URLSearchParams(searchParams);
+
+    if (query && query.length > 0) {
+      params.set('q', query);
+    } else {
+      params.delete('q');
+    }
+
+    setSearchParams(params);
+  };
 
   return (
     <>
@@ -70,7 +84,12 @@ const CustomersPage = () => {
         <Card className="p-0">
           <CardContent className="p-0">
             <div className="p-2 flex justify-between items-center gap-2 border-b">
-              <SearchInput className="max-w-xs" placeholder="Buscar cliente" />
+              <SearchInput
+                className="max-w-xs"
+                placeholder="Buscar cliente"
+                query={q}
+                onQueryChange={handleSearchCustomer}
+              />
               <DataSort options={customersSortOptions} />
             </div>
             {isLoading ? (

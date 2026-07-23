@@ -26,5 +26,6 @@ export const useCustomers = () => {
 
   return {
     ...query,
+    q,
   };
 };
