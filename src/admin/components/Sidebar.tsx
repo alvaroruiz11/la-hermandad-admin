@@ -64,6 +64,12 @@ export const Sidebar = () => {
                     to="/admin/products"
                     Icon={Tag}
                     onNavigation={handleNavigation}
+                    subItems={[
+                      {
+                        to: '/admin/categories',
+                        children: 'Categorías',
+                      },
+                    ]}
                   >
                     Productos
                   </NavItem>
