@@ -8,6 +8,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { DataEmptyState } from '@/shared/components/DataEmptyState';
 import { DataSort, type SortOption } from '@/shared/components/DataSort';
 import { SearchInput } from '@/shared/components/SearchInput';
+import { useCategories } from '@/categories/hooks/useCategories';
 
 const categoriesSortOptions: SortOption[] = [
   {
@@ -37,6 +38,8 @@ const categoriesSortOptions: SortOption[] = [
 ];
 
 const CategoriesPage = () => {
+  const { data, isLoading, q: query, handleSearchCategory } = useCategories();
+
   return (
     <>
       <div className="flex items-center justify-between">
@@ -55,23 +58,22 @@ const CategoriesPage = () => {
               <SearchInput
                 className="max-w-xs"
                 placeholder="Buscar categoría"
-                // query={query}
-                // onQueryChange={handleSearchProduct}
+                query={query}
+                onQueryChange={handleSearchCategory}
               />
 
               <DataSort options={categoriesSortOptions} />
             </div>
             {/* TODO: Mejorar el isLoading */}
-            {/* {isLoading ? (
+            {isLoading ? (
               <div className="flex items-center justify-center h-24">
                 <Spinner />
               </div>
             ) : data?.results && data.results.length > 0 ? (
-              <CategoriesTable categories={[]} />
+              <CategoriesTable categories={data.results || []} />
             ) : (
               <DataEmptyState title="No se encontraron categorías" />
-            )} */}
-            <CategoriesTable categories={[]} />
+            )}
           </CardContent>
         </Card>
       </div>

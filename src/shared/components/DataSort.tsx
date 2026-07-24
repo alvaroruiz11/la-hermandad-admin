@@ -1,6 +1,6 @@
 import { useSearchParams } from 'react-router';
-import { buttonVariants } from '@/components/ui/button';
 import { ArrowUpDown } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -42,9 +42,7 @@ export const DataSort = ({ options }: Props) => {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger
-        className={buttonVariants({ size: 'icon-sm', variant: 'outline' })}
-      >
+      <DropdownMenuTrigger render={<Button size="icon-sm" variant="outline" />}>
         <ArrowUpDown />
       </DropdownMenuTrigger>
 
